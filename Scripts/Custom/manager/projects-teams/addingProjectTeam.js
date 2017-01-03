@@ -184,7 +184,7 @@ function projectTable(container) {
             $(container + " .projects").empty().append(dataMenu);
 
         },
-        openPopup: function () {
+        openPopup: function (tableObject) {
 
             $(container).on("click", ".openPopup", function (e) {
 
@@ -203,7 +203,9 @@ function projectTable(container) {
                             $(container).append(d);
                             $(".popupManager").show().addClass(popClass);
 
-                            var addProject = AddPopup("." + popClass, "../../Scripts/Custom/jsonTest/", "LINK_FOR_POST", "projectmenu.html").init();
+                            var addProject = addPopup("." + popClass, "../../Scripts/Custom/jsonTest/", "LINK_FOR_POST", "projectmenu.html");
+                            addProject.__proto__ = tableObject
+                            addProject.init();                            
                         })
 
                         break
@@ -218,8 +220,9 @@ function projectTable(container) {
                             $(container).append(d);
                             $(".popupManager").show().addClass(popClass).attr("data-prId", projId);
 
-                            var addTeam = AddPopup("." + popClass, "../../Scripts/Custom/jsonTest/", "LINK_FOR_POST", "projectmenu.html");
-                            addTeam.init();
+                            var addTeam = addPopup("." + popClass, "../../Scripts/Custom/jsonTest/", "LINK_FOR_POST", "projectmenu.html");
+                            addTeam.__proto__ = tableObject;
+                            addTeam.init()                            
                         })
 
                         break
@@ -234,10 +237,10 @@ function projectTable(container) {
                             $(container).append(d);
                             $(".popupManager").show().addClass(popClass);
 
-                            var editTeam = AddPopup("." + popClass, "../../Scripts/Custom/jsonTest/", "LINK_FOR_POST", "projectmenu.html");
+                            var editTeam = addPopup("." + popClass, "../../Scripts/Custom/jsonTest/", "LINK_FOR_POST", "projectmenu.html");
+                            editTeam.__proto__ = tableObject
                             editTeam.init();
                             editTeam.edit();
-
                         })
 
                         break
@@ -251,7 +254,7 @@ $(document).ready(function () {
 
     var ProjectsList = projectTable(".manageProject");
     ProjectsList.init();
-    ProjectsList.openPopup();
+    ProjectsList.openPopup(ProjectsList);
 })
 
 

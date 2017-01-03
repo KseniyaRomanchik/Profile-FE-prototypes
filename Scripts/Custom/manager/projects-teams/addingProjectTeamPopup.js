@@ -2,9 +2,10 @@
 // linkSend = POST url (change method in postData() )
 // linkMenu = GET url (for getting new menu layout)
 
-function AddPopup(container, linkList, linkSend, linkMenu) {
+function addPopup(container, linkList, linkSend, linkMenu) {
 
     var popupWrapper = container;
+    var self = this;
 
     // only for edit team popup
     function editProject() {
@@ -45,6 +46,17 @@ function AddPopup(container, linkList, linkSend, linkMenu) {
                     $(this).datepicker().data("datepicker").selectDate(data[ind]);
                 }
             }
+            if ($(this).attr("data-startProject-value")) {
+
+                valueMin = $(this).attr("data-startProject-value").split("-");
+                valueMax = $(this).attr("data-endProject-value").split("-");
+                data.push(new Date(valueMin[2], valueMin[1] - 1, valueMin[0]),new Date(valueMax[2], valueMax[1] - 1, valueMax[0]))
+                $(this).datepicker().data("datepicker").update({
+                    minDate: data[0],
+                    maxDate: data[1]
+                });
+
+            }
         });
 
         return [[data[0],data[1]],[data[2],data[3]]]
@@ -62,7 +74,7 @@ function AddPopup(container, linkList, linkSend, linkMenu) {
 
         dates[1][0] = $(popupWrapper + " .teamDate .start.datepicker-here").datepicker().data("datepicker").selectedDates[0];
         dates[1][1] = $(popupWrapper + " .teamDate .end.datepicker-here").datepicker().data("datepicker").selectedDates[0];
-
+        
         return dates
     }
 
@@ -83,8 +95,8 @@ function AddPopup(container, linkList, linkSend, linkMenu) {
             onShow: function (inst, callb) {
 
                 var newDates = refreshDates();
-                var projDate = newDates[0][0] ? newDates[0] : sourceDates[0];
-                var teamDate = newDates[1][0] ? newDates[1] : sourceDates[1];
+                var projDate = newDates[0][0] || newDates[0][1] ? newDates[0] : sourceDates[0];
+                var teamDate = newDates[1][0] || newDates[1][1] ? newDates[1] : sourceDates[1];
 
                 if ($(".projDate .datepicker-here").length) {
 
@@ -93,7 +105,7 @@ function AddPopup(container, linkList, linkSend, linkMenu) {
                         minDate: teamDate[1] ? teamDate[1] : (projDate[0] ? projDate[0] : teamDate[0])
                     });
                     $(popupWrapper + " .projDate .start.datepicker-here").datepicker().data("datepicker").update({
-                        maxDate: teamDate[0] ? teamDate[0] : (projDate[1] ? projDate[1] : teamDate[1]),
+                        maxDate: teamDate[0] ? teamDate[0] : (teamDate[1] ? teamDate[1] : projDate[1]),
                         minDate: ""
                     });
                 }
@@ -227,7 +239,6 @@ function AddPopup(container, linkList, linkSend, linkMenu) {
     function preload(select) {
 
         $(select).off().next('preload').remove();
-
         $(select).addClass("disabled").after("<img class='preload' src='../../images/loading.gif'/>");
     }
 
@@ -290,8 +301,8 @@ function AddPopup(container, linkList, linkSend, linkMenu) {
         $("#" + popupWrapper.substr(1) + "ManagerSave").modal("show");
         preloadAfter("#save");
         hidePopup();
-        getData(linkMenu, ProjectsList.addProject);  // ONLY FOR LOCAL
-        //getData(linkMenu + "&id=" + d, ProjectsList.addProject);  // FOR IMPLEMENT
+        getData(linkMenu, self.__proto__.addProject);  // ONLY FOR LOCAL
+        //getData(linkMenu + "&id=" + d, self.__proto__.addProject);  // FOR IMPLEMENT
         location.hash = "#id=" + d;
     }
 
